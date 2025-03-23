@@ -1,0 +1,105 @@
+<?xml version='1.0'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="car-robot-gazebo">
+
+  <gazebo reference="chassis-link">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+
+  <xacro:macro name="color_wheel" params="x_position y_position">
+    <gazebo reference="${x_position}-${y_position}-wheel-link">
+      <mu1>10000.0</mu1>
+      <mu2>10000.0</mu2>
+      <material>Gazebo/Purple</material>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- Differential drive plugin -->
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>100</updateRate>
+      <left_joint>joint-chassis-rare-left-wheel</left_joint>
+      <right_joint>joint-chassis-rare-right-wheel</right_joint>
+      <wheel_separation>${chassis_width}</wheel_separation>
+      <wheel_diameter>${2 * wheel_radius}</wheel_diameter>
+      <torque>0.1</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <publishWheelTF>true</publishWheelTF>
+      <publishOdom>true</publishOdom>
+      <publishWheelJointState>true</publishWheelJointState>
+    </plugin>
+  </gazebo>
+
+  <!-- Wheels -->
+  <xacro:color_wheel x_position="front" y_position="right"/>
+  <xacro:color_wheel x_position="front" y_position="left"/>
+  <xacro:color_wheel x_position="rare" y_position="right"/>
+  <xacro:color_wheel x_position="rare" y_position="left"/>
+
+  <!-- Lidar Link -->
+  <link name="lidar_link">
+    <visual name="lidar_visual">
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+      <material name = "green">
+        <color rgba="0.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- Joint to base_link -->
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 0.035" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo Lidar Plugin -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="ray">
+      <update_rate>10</update_rate>
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.5707</min_angle> <!-- -90 degrees (left) -->
+			<max_angle>1.5707</max_angle>  <!-- +90 degrees (right) -->
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+       <plugin name="gazebo_ros_head_hokuyo_controlle" filename="libgazebo_ros_ray_sensor.so" >
+          <ros>
+          <remapping>~/out:=/scan</remapping>                                                               
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>

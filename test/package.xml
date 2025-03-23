@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>test</name>
+  <version>0.0.0</version>
+  <description>Custom Skid-Steer Robot Simulation Package</description>
+  <maintainer email="arpit@todo.todo">arpit</maintainer>
+  <license>MIT</license>
+
+  <!-- Build tool -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Runtime dependencies -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>urdf</exec_depend>
+  <depend>sensor_msgs</depend>
+
+  <!-- Testing dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
