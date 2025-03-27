@@ -7,31 +7,53 @@
 
   <xacro:macro name="color_wheel" params="x_position y_position">
     <gazebo reference="${x_position}-${y_position}-wheel-link">
-      <mu1>10000.0</mu1>
-      <mu2>10000.0</mu2>
+      <mu1>5000.0</mu1>
+      <mu2>5000.0</mu2>
       <material>Gazebo/Purple</material>
     </gazebo>
   </xacro:macro>
 
   <!-- Differential drive plugin -->
   <gazebo>
-    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>100</updateRate>
+    <plugin name="skid_steer_drive" filename="libgazebo_ros_diff_drive.so">
+      <!-- Wheel joints -->
+      <num_wheel_pairs>2</num_wheel_pairs>
+      <left_joint>joint-chassis-front-left-wheel</left_joint>
       <left_joint>joint-chassis-rare-left-wheel</left_joint>
+      <right_joint>joint-chassis-front-right-wheel</right_joint>
       <right_joint>joint-chassis-rare-right-wheel</right_joint>
+
+      <!-- Kinematics -->
       <wheel_separation>${chassis_width}</wheel_separation>
       <wheel_diameter>${2 * wheel_radius}</wheel_diameter>
-      <torque>0.1</torque>
-      <commandTopic>cmd_vel</commandTopic>
-      <odometryTopic>odom</odometryTopic>
-      <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <publishWheelTF>true</publishWheelTF>
-      <publishOdom>true</publishOdom>
-      <publishWheelJointState>true</publishWheelJointState>
+
+      <!-- Limits -->
+      <max_wheel_torque>4.0</max_wheel_torque>      <!-- Adjust as per your model -->
+      <max_wheel_acceleration>0.2</max_wheel_acceleration>      <!-- Optional -->
+
+      <!-- Odometry & Frames -->
+      <odometry_topic>odom</odometry_topic>      <!-- Important -->
+      <odometry_frame>odom</odometry_frame>      <!-- Important -->
+      <robot_base_frame>base_link</robot_base_frame>      <!-- Important -->
+      <publish_odom>true</publish_odom>      <!-- Crucial -->
+      <publish_odom_tf>true</publish_odom_tf>      <!-- Crucial -->
+
+      <!-- <ros>
+        <namespace>/</namespace>
+        <argument>/cmd_vel:=cmd_vel</argument>
+        <argument>/odom:=odom</argument>
+      </ros> -->
+      <command_topic>cmd_vel</command_topic>
+
+
+      <!-- Misc -->
+      <publish_wheel_joint_state>true</publish_wheel_joint_state>
+      <update_rate>20.0</update_rate>      <!-- Stable frequency -->
     </plugin>
   </gazebo>
+
+
+
 
   <!-- Wheels -->
   <xacro:color_wheel x_position="front" y_position="right"/>
@@ -78,8 +100,8 @@
           <horizontal>
             <samples>360</samples>
             <resolution>1</resolution>
-            <min_angle>-1.5707</min_angle> <!-- -90 degrees (left) -->
-			<max_angle>1.5707</max_angle>  <!-- +90 degrees (right) -->
+            <min_angle>-1.5707</min_angle>            <!-- -90 degrees (left) -->
+            <max_angle>1.5707</max_angle>            <!-- +90 degrees (right) -->
           </horizontal>
         </scan>
         <range>
@@ -93,11 +115,11 @@
           <stddev>0.01</stddev>
         </noise>
       </ray>
-       <plugin name="gazebo_ros_head_hokuyo_controlle" filename="libgazebo_ros_ray_sensor.so" >
-          <ros>
-          <remapping>~/out:=/scan</remapping>                                                               
-          </ros>
-          <output_type>sensor_msgs/LaserScan</output_type>
+      <plugin name="gazebo_ros_head_hokuyo_controlle" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <remapping>~/out:=/scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
       </plugin>
     </sensor>
   </gazebo>

@@ -1,9 +1,9 @@
 <?xml version='1.0'?>
-<robot xmlns:xacro ="http://www.ros.org/wiki/xacro" name="car_robot_chassis">	
-	
+<robot xmlns:xacro ="http://www.ros.org/wiki/xacro" name="car_robot_chassis">
+
 	<!--dummy link-->
 	<link name="base_link"/>
-	
+
 	<!--chassis link-->
 	<link name="chassis-link">
 		<visual>
@@ -13,7 +13,7 @@
 			</geometry>
 			<material name="brown">
 				<color rgba="0.3 0 0.4 1"/>
-			</material>		
+			</material>
 		</visual>
 		<collision>
 			<origin xyz="0 0 0" rpy="0 0 0" />
@@ -22,12 +22,11 @@
 			</geometry>
 		</collision>
 		<inertial>
-			<mass value="0.4" />
-			<inertia ixx="0.00048333" iyy="0.0013367" izz="0.0018133"
-			ixy="0" ixz="0" iyz="0"/>
+			<mass value="0.8" />
+			<inertia ixx="0.00048333" iyy="0.0013367" izz="0.0018133" ixy="0" ixz="0" iyz="0"/>
 		</inertial>
 	</link>
-	
+
 	<joint name="joint-base-chassis" type="fixed">
 		<parent link="base_link"/>
 		<child link="chassis-link"/>
